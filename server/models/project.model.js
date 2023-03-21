@@ -70,7 +70,12 @@ Project.create = (project, result) => {
     project.kw
   }, ${project.months_acquired}); 
   INSERT INTO test_project.company_adquires (ID_COMPANY, ID_PROJECT)
-  VALUES(${project.id_company}, '${project.id_project}'); `
+  VALUES(${project.id_company}, '${project.id_project}'); 
+  `
+  project.wgt.forEach((el) => {
+    query += ` INSERT INTO test_project.wgt (WGT_NUMBER, ID_PROJECT)
+    VALUES('${el}', '${project.id_project}'); `
+  })
   console.log("query:", query)
   model.query(query, (err, res) => {
     if (err) {

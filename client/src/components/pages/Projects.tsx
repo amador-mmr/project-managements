@@ -103,7 +103,7 @@ const Projects = () => {
   }
 
   useEffect(() => {
-    if (localStorage.getItem('auth') === null) {
+    if (localStorage.getItem('user') === null) {
       navigate('/login', { replace: true })
     }
     getProjects()

@@ -2,6 +2,7 @@ import { Button, Divider, Stack, TextField, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import axios from 'axios'
 import jwtDecode from 'jwt-decode'
+import { useSnackbar } from 'notistack'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -21,6 +22,7 @@ interface User {
 const Login = () => {
   const classes = useStyles()
   const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -31,6 +33,12 @@ const Login = () => {
         username: username,
         password: password,
       }
+      if (username === '' || password === '') {
+        enqueueSnackbar('Empty fields', {
+          variant: 'error',
+        })
+        return
+      }
       const { data } = await axios.post('/api/userByLogin', user, {
         headers: {
           'Content-type': 'application/json',
@@ -38,8 +46,16 @@ const Login = () => {
       })
       if (data) {
         const token: any = jwtDecode(data)
-        sessionStorage.setItem('auth', token.data.username)
+        sessionStorage.setItem('user', token.data.username)
+        enqueueSnackbar('Empty fields', {
+          variant: 'success',
+        })
         navigate('/projects', { replace: true })
+      }
+      else {
+        enqueueSnackbar('Username/Password incorrect', {
+          variant: 'error',
+        })
       }
     } catch (error) {
       console.error(error)
