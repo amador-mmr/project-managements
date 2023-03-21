@@ -46,13 +46,12 @@ const Login = () => {
       })
       if (data) {
         const token: any = jwtDecode(data)
-        sessionStorage.setItem('user', token.data.username)
-        enqueueSnackbar('Empty fields', {
+        localStorage.setItem('user', token.data.username)
+        enqueueSnackbar('Login successfuly', {
           variant: 'success',
         })
         navigate('/projects', { replace: true })
-      }
-      else {
+      } else {
         enqueueSnackbar('Username/Password incorrect', {
           variant: 'error',
         })

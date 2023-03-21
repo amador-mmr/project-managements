@@ -82,7 +82,7 @@ export interface Project {
   status: string
   kw: number
   months_acquired?: number
-  id_company: string
+  id_company: number
   wgt: string[]
 }
 
@@ -113,6 +113,8 @@ const Projects = () => {
   useEffect(() => {
     if (projects.length > 0 || wgt.length > 0) {
       let listProjects = projects
+      listProjects.forEach((p) => (p.wgt = []))
+      setProjects([...listProjects])
       wgt.forEach((w) => {
         const index = listProjects.findIndex(
           (p) => p.id_project === w.idProject
@@ -202,8 +204,6 @@ const Projects = () => {
         <Table
           sx={{
             minWidth: 600,
-            maxWidth: 800,
-            width: showNewEdit ? '90%' : '70%',
           }}
           size="small"
         >
@@ -282,6 +282,12 @@ const Projects = () => {
     )
   }
 
+  const handleRefresh = () => {
+    setShowNewEdit(false)
+    getProjects()
+    getWgt()
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.layoutTitle}>
@@ -317,6 +323,7 @@ const Projects = () => {
             project={current}
             projects={projects}
             wgts={wgt}
+            handleRefresh={handleRefresh}
           />
         )}
       </div>

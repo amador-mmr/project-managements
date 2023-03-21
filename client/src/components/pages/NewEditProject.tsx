@@ -50,19 +50,20 @@ interface Props {
   project: Project | null
   projects: Project[]
   wgts: { number: string; idProject: string }[]
+  handleRefresh: () => void
 }
 
 const NewProject: Project = {
-  id_project: '',
-  name: '',
-  code_3: '',
-  acquisition_date: new Date(),
-  deal_type: '',
-  id_group: '',
-  status: '',
-  kw: 0,
-  months_acquired: 0,
-  id_company: '',
+  id_project: '002',
+  name: 'Project 4',
+  code_3: 'MET',
+  acquisition_date: new Date(2019, 4, 18),
+  deal_type: 'Share',
+  id_group: 'RW 3',
+  status: '3 Operating',
+  kw: 9000,
+  months_acquired: 28,
+  id_company: 9,
   wgt: [],
 }
 
@@ -81,10 +82,13 @@ const NewEditProject = (props: Props) => {
         return Object.assign({}, prev, project, props.project)
       })
       setCheckDate(props.project.acquisition_date === null ? false : true)
+      setListWgt([...props.project.wgt])
     } else if (props.project === null) {
       setProject((prev) => {
         return Object.assign({}, prev, project, NewProject)
       })
+      setCheckDate(true)
+      setListWgt([])
     }
   }, [props.project])
 
@@ -95,10 +99,10 @@ const NewEditProject = (props: Props) => {
       project.code_3 === '' ||
       project.deal_type === '' ||
       project.id_group === '' ||
-      project.id_company === '' ||
-      project.kw === null
+      project.id_company <= 0 ||
+      project.kw < 0
     ) {
-      enqueueSnackbar('Empty fields', {
+      enqueueSnackbar('Empty/incorrect fields', {
         variant: 'error',
         preventDuplicate: true,
       })
@@ -110,30 +114,51 @@ const NewEditProject = (props: Props) => {
   const onSubmit = async () => {
     try {
       if (!validate()) return
-      const { data } = await axios.post('/api/create-project', project, {
-        headers: {
-          'Content-type': 'application/json',
-        },
-      })
-      console.log('Result create:', data)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  const onEdit = async () => {
-    try {
-      if (!validate()) return
-      const { data } = await axios.put(
-        '/api/edit-project/' + project.id_project,
-        project,
+      const { data } = await axios.post(
+        '/api/create-project',
+        { project: project, wgt: listWgt },
         {
           headers: {
             'Content-type': 'application/json',
           },
         }
       )
-      console.log('Result create:', data)
+      if (data) {
+        enqueueSnackbar('Project create succefully', {
+          variant: 'success',
+        })
+        props.handleRefresh()
+        return
+      }
+    } catch (error) {
+      console.error(error)
+      enqueueSnackbar('Fail to create project, try again', {
+        variant: 'error',
+      })
+    }
+  }
+
+  const onEdit = async () => {
+    try {
+      if (!validate()) return
+      let p = project
+      p.wgt = listWgt
+      const { data } = await axios.put(
+        '/api/edit-project/' + project.id_project,
+        p,
+        {
+          headers: {
+            'Content-type': 'application/json',
+          },
+        }
+      )
+      if (data) {
+        enqueueSnackbar('Project update succefully', {
+          variant: 'success',
+        })
+        props.handleRefresh()
+        return
+      }
     } catch (error) {
       console.error(error)
     }
@@ -190,6 +215,7 @@ const NewEditProject = (props: Props) => {
                 id_project: event.target.value,
               }))
             }}
+            disabled={props.project !== null}
           />
           <TextField
             fullWidth
@@ -275,13 +301,14 @@ const NewEditProject = (props: Props) => {
             onChange={(event) => {
               setProject((prev) => ({
                 ...prev,
-                id_company: event.target.value,
+                id_company: parseInt(event.target.value),
               }))
             }}
           />
           <div>
             <TextField
               label="Wgt"
+              variant="filled"
               type="text"
               value={wgt}
               onChange={(e) => setWgt(e.target.value)}
@@ -291,19 +318,20 @@ const NewEditProject = (props: Props) => {
               dense
               sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
             >
-              {project.wgt.map((value: string) => {
+              {listWgt.map((value: string) => {
                 return (
                   <ListItem
                     key={value}
                     secondaryAction={
                       <Checkbox
                         edge="end"
-                        onChange={() =>
+                        onChange={() => {
                           setProject({
                             ...project,
                             wgt: project.wgt.filter((l) => l !== value),
                           })
-                        }
+                          setListWgt([...listWgt.filter((l) => l !== value)])
+                        }}
                         checked={true}
                       />
                     }

@@ -13,8 +13,7 @@ exports.login = async (req, res) => {
           err.message || "Some error occurred while retrieving from user."
       })
     else {
-      let tokenUser = null
-      if (bcrypt.compareSync(req.body.password, data.password)) {
+      if (data !== null && bcrypt.compareSync(req.body.password, data.password)) {
         tokenUser = jwt.sign({ data }, API_KEY)
         console.log("Token user:", tokenUser)
         res.send(tokenUser)

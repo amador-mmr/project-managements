@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 21, 2023 at 11:54 AM
+-- Generation Time: Mar 21, 2023 at 01:41 PM
 -- Server version: 5.7.24
 -- PHP Version: 7.4.8
 
@@ -26,28 +26,6 @@ USE `test_project`;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `company_adquires`
---
-
-DROP TABLE IF EXISTS `company_adquires`;
-CREATE TABLE IF NOT EXISTS `company_adquires` (
-  `ID_COMPANY` int(11) NOT NULL,
-  `ID_PROJECT` varchar(150) NOT NULL,
-  PRIMARY KEY (`ID_COMPANY`,`ID_PROJECT`),
-  KEY `company_adquires_FK` (`ID_PROJECT`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `company_adquires`
---
-
-INSERT INTO `company_adquires` (`ID_COMPANY`, `ID_PROJECT`) VALUES
-(19, '003'),
-(10, '005');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `project`
 --
 
@@ -62,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `project` (
   `STATUS` varchar(100) NOT NULL,
   `KW` int(11) NOT NULL,
   `MONTHS_ACQUIRED` int(11) DEFAULT NULL,
+  `ID_COMPANY` int(11) NOT NULL,
   PRIMARY KEY (`ID_PROJECT`),
   UNIQUE KEY `project_un` (`NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -70,9 +49,10 @@ CREATE TABLE IF NOT EXISTS `project` (
 -- Dumping data for table `project`
 --
 
-INSERT INTO `project` (`ID_PROJECT`, `NAME`, `CODE_3`, `ACQUISITION_DATE`, `DEAL_TYPE`, `ID_GROUP`, `STATUS`, `KW`, `MONTHS_ACQUIRED`) VALUES
-('003', 'Project 1', 'HAS', NULL, 'Share', 'RW 1', '1 Acquisition', 7500, NULL),
-('005', 'Project 2', 'HOL', '2019-09-02 00:00:00', 'Asset', 'RW 2', '3 Operating', 3300, 23);
+INSERT INTO `project` (`ID_PROJECT`, `NAME`, `CODE_3`, `ACQUISITION_DATE`, `DEAL_TYPE`, `ID_GROUP`, `STATUS`, `KW`, `MONTHS_ACQUIRED`, `ID_COMPANY`) VALUES
+('003', 'Project 1', 'HAS', NULL, 'Share', 'RW 1', '1 Acquisition', 7500, NULL, 19),
+('005', 'Project 2', 'HOL', '2019-09-02 00:00:00', 'Asset', 'RW 2', '3 Operating', 3300, 23, 10),
+('007', 'Project 3', 'JES', '2019-09-02 00:00:00', 'Share', 'RW 1', '2 in Development', 2300, 23, 11);
 
 -- --------------------------------------------------------
 
@@ -125,12 +105,6 @@ INSERT INTO `wgt` (`WGT_NUMBER`, `ID_PROJECT`) VALUES
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `company_adquires`
---
-ALTER TABLE `company_adquires`
-  ADD CONSTRAINT `company_adquires_FK` FOREIGN KEY (`ID_PROJECT`) REFERENCES `project` (`ID_PROJECT`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `wgt`
